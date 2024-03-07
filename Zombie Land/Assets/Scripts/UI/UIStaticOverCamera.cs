@@ -11,6 +11,7 @@ public class UIStaticOverCamera : MonoBehaviour
     }
     private void LateUpdate()
     {
-        transform.LookAt(transform.position + _cameraMain.transform.rotation * Vector3.forward, _cameraMain.transform.rotation * Vector3.up);
+        if(_cameraMain is not null)
+            transform.LookAt(transform.position + _cameraMain.transform.rotation * Vector3.forward, _cameraMain.transform.rotation * Vector3.up);
     }
 }
