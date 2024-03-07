@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4018034741747224626}
   - component: {fileID: 5255606683383400099}
   - component: {fileID: 4675914155633356704}
+  - component: {fileID: 3749293216873080437}
   m_Layer: 8
   m_Name: SA_Prop_Barrel_02
   m_TagString: Enemy
@@ -122,3 +123,24 @@ MonoBehaviour:
   _explosionInstance: {fileID: 2772378543286543728, guid: 26436ec7d861b4c4c8f155257d7c2ffb, type: 3}
   _explosionVFX: {fileID: 1757550589666010878, guid: 04eb585e290dc479285bcbc044e5575f, type: 3}
   _explosionClip: {fileID: 8300000, guid: 6a24251e2c8e96c4697d8d0c68fcb424, type: 3}
+--- !u!114 &3749293216873080437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8715808299067709457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 0
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1

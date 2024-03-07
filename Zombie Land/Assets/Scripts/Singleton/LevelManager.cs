@@ -2,33 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LevelManager : MonoBehaviour
+public class LevelManager : NetworkBehaviour
 {
-    #region Singleton
-    private static LevelManager _default;
-    public static LevelManager Default => _default;
+    [SerializeField] private List<LevelSettings> _settings;
 
-    private void Awake()
-    {
-        _default = this;
-    }
-    #endregion
+    [SerializeField] private Transform _playerTransform;
 
-    [SerializeField]
-    private List<LevelSettings> _settings;
-    [SerializeField]
-    private Transform _playerTransform;
-    [SerializeField]
-    private TMP_Text _progressBarTextfield, _rewardTextfield;
-    [SerializeField]
-    private Image _progressBarFill;
-    [SerializeField]
-    private int _maxZombieInstances;
-    [SerializeField]
-    private Transform[] _spawnPoints, _plSpawnPoints;
+    [SerializeField] private TMP_Text _progressBarTextfield, _rewardTextfield;
+
+    [SerializeField] private Image _progressBarFill;
+
+    [SerializeField] private int _maxZombieInstances;
+
+    [SerializeField] private Transform[] _spawnPoints, _plSpawnPoints;
+
+    private LevelSettings _currentLevelSettings;
 
     private int
         _targetFrags,
@@ -36,10 +28,20 @@ public class LevelManager : MonoBehaviour
         _currentLevel,
         _currentZombieInstances;
 
-    private LevelSettings _currentLevelSettings;
+    private bool isAlreadyWin;
 
     private void Start()
     {
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        if (!IsServer)
+        {
+            enabled = false;
+            return;
+        }
+
         Init();
     }
 
@@ -49,7 +51,7 @@ public class LevelManager : MonoBehaviour
         _currentLevelSettings = _settings[Mathf.Min(_settings.Count - 1, _currentLevel)];
         _targetFrags = _currentLevelSettings.TargetFrags;
 
-        for (int i = 0; i < _maxZombieInstances; i++)
+        for (var i = 0; i < _maxZombieInstances; i++)
         {
             SpawnZombie();
         }
@@ -61,11 +63,10 @@ public class LevelManager : MonoBehaviour
 
     private void SpawnZombie()
     {
-        Instantiate(_currentLevelSettings.ZombiePool[Random.Range(0, _currentLevelSettings.ZombiePool.Count)], _spawnPoints[Random.Range(0, _spawnPoints.Length)].position, Quaternion.identity);
+        var enemy = Instantiate(_currentLevelSettings.ZombiePool[Random.Range(0, _currentLevelSettings.ZombiePool.Count)], _spawnPoints[Random.Range(0, _spawnPoints.Length)].position, Quaternion.identity);
+        enemy.GetComponent<NetworkObject>().Spawn(true);
         _currentZombieInstances++;
     }
-
-    private bool isAlreadyWin = false;
 
     public void ZombieKilled()
     {
@@ -84,19 +85,18 @@ public class LevelManager : MonoBehaviour
 
     private void Win()
     {
-        int currReward = _currentLevelSettings.Reward;
+        var currReward = _currentLevelSettings.Reward;
         MoneyMenuController.Default.UpdateMoney(currReward);
         _rewardTextfield.text = "+" + currReward;
         PlayerPrefs.SetInt("Level", PlayerPrefs.GetInt("Level", 0) + 1);
 
-        List<GameObject> tempZombies = GameObject.FindGameObjectsWithTag("Enemy").ToList();
-        foreach (GameObject zombie in tempZombies)
+        var tempZombies = GameObject.FindGameObjectsWithTag("Enemy").ToList();
+        foreach (var zombie in tempZombies)
         {
-            if(zombie.TryGetComponent<ZombieController>(out ZombieController tempZC))
+            if (zombie.TryGetComponent(out ZombieController tempZC))
             {
                 tempZC.DieWithoutCallback();
             }
-            
         }
 
         StartCoroutine(CWin());
@@ -115,4 +115,15 @@ public class LevelManager : MonoBehaviour
         _progressBarFill.fillAmount = (float)_currentFrags / _targetFrags;
         _progressBarTextfield.text = _currentFrags + " / " + _targetFrags;
     }
+
+    #region Singleton
+
+    public static LevelManager Default { get; private set; }
+
+    private void Awake()
+    {
+        Default = this;
+    }
+
+    #endregion
 }
