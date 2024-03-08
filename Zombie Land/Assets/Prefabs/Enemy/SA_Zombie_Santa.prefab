@@ -2130,8 +2130,8 @@ GameObject:
   - component: {fileID: 497840860086848503}
   - component: {fileID: 3494533104687397444}
   - component: {fileID: 774545565611436342}
-  - component: {fileID: -1699949803987895593}
-  - component: {fileID: -9084136656460470135}
+  - component: {fileID: 4000572743798722667}
+  - component: {fileID: 8949184886484990868}
   m_Layer: 0
   m_Name: SA_Zombie_Santa
   m_TagString: Enemy
@@ -2439,7 +2439,7 @@ MonoBehaviour:
   _characterMainCollider: {fileID: 2447343088192125154}
   _characterHealth: {fileID: 992038160961304226}
   _characterRB: {fileID: 350821846515675993}
---- !u!114 &-1699949803987895593
+--- !u!114 &4000572743798722667
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2451,7 +2451,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3112190929
+  GlobalObjectIdHash: 1157615620
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -2460,7 +2460,7 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
---- !u!114 &-9084136656460470135
+--- !u!114 &8949184886484990868
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
