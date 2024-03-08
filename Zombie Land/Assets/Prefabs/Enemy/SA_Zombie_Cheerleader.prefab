@@ -2130,8 +2130,8 @@ GameObject:
   - component: {fileID: 497840860086848503}
   - component: {fileID: 3494533104687397444}
   - component: {fileID: 774545565611436342}
-  - component: {fileID: -2530875339351936593}
-  - component: {fileID: 1602137518965081844}
+  - component: {fileID: -6399186378598099225}
+  - component: {fileID: -8270397795365569738}
   m_Layer: 0
   m_Name: SA_Zombie_Cheerleader
   m_TagString: Enemy
@@ -2439,7 +2439,7 @@ MonoBehaviour:
   _characterMainCollider: {fileID: 2447343088192125154}
   _characterHealth: {fileID: 992038160961304226}
   _characterRB: {fileID: 350821846515675993}
---- !u!114 &-2530875339351936593
+--- !u!114 &-6399186378598099225
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2451,7 +2451,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 105143897
+  GlobalObjectIdHash: 3545488427
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -2460,7 +2460,7 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
---- !u!114 &1602137518965081844
+--- !u!114 &-8270397795365569738
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
