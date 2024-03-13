@@ -1,59 +1,84 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
+using Unity.Netcode;
 using UnityEngine;
 
-public class WeaponHolder : MonoBehaviour
+public class WeaponHolder : NetworkBehaviour
 {
-    public System.Action<WeaponInfo> WeaponChanged;
-
     [SerializeField] private Transform _SHGrab_target, _SHGrab_hint;
     [SerializeField] private WeaponInfo[] _weaponInstances;
 
-    private int _currentWeapon = 0;
+    private readonly NetworkVariable<int> _currentWeapon = new();
+    public Action<WeaponInfo> WeaponChanged;
 
     private void Update()
     {
-        if(Input.GetButtonDown("WeaponSwitchNext"))
+        if (Input.GetButtonDown("WeaponSwitchNext"))
             NextWeapon();
         if (Input.GetButtonDown("WeaponSwitchPrevious"))
             PreviousWeapon();
     }
 
-    private void Start()
+    public override void OnNetworkSpawn()
     {
-        SwapWeapon(0);
+        RequestWeaponChangeServerRpc(0, RpcTarget.Server);
     }
 
     [ContextMenu("Next Weapon")]
     private void NextWeapon()
     {
-        do {
-            _currentWeapon++;
-        }
-        while (PlayerPrefs.GetInt("Weapon" + _currentWeapon % _weaponInstances.Length) != 1);
-        SwapWeapon(_currentWeapon);
+        var currentWeapon = _currentWeapon.Value;
+        do
+        {
+            currentWeapon = ++currentWeapon % _weaponInstances.Length;
+        } while (PlayerPrefs.GetInt("Weapon" + currentWeapon) != 1);
+
+        RequestWeaponChangeServerRpc(currentWeapon, RpcTarget.Server);
     }
+
     [ContextMenu("Previous Weapon")]
     private void PreviousWeapon()
     {
+        var currentWeapon = _currentWeapon.Value;
         do
         {
-            _currentWeapon += _weaponInstances.Length - 1;
-        }
-        while (PlayerPrefs.GetInt("Weapon" + _currentWeapon % _weaponInstances.Length) != 1);
-        SwapWeapon(_currentWeapon);
+            currentWeapon = (currentWeapon + _weaponInstances.Length - 1) % _weaponInstances.Length;
+        } while (PlayerPrefs.GetInt("Weapon" + currentWeapon) != 1);
+
+        RequestWeaponChangeServerRpc(currentWeapon, RpcTarget.Server);
     }
-    public void SwapWeapon(int _weaponIndex)
+
+    [Rpc(SendTo.Server, RequireOwnership = false, AllowTargetOverride = true)]
+    public void RequestWeaponChangeServerRpc(int weaponIndex, RpcParams rpcParams)
     {
-        
+        if (!NetworkManager.Singleton.ConnectedClients.TryGetValue(rpcParams.Receive.SenderClientId, out var client))
+            return;
+
+        var player = client.PlayerObject.GetComponentInChildren<WeaponHolder>(); // TODO: Грамотнее искать челикса
+        if (!player)
+            return;
+
+#if UNITY_EDITOR
+        Debug.Log($"Swap to server (ClientId: {rpcParams.Receive.SenderClientId} | WeaponId: {weaponIndex})");
+#endif
+        _currentWeapon.Value = weaponIndex;
+        player.UpdateWeaponClientRpc(weaponIndex);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    public void UpdateWeaponClientRpc(int weaponIndex)
+    {
+#if UNITY_EDITOR
+        Debug.Log($"Swap to client (WeapoonId: {weaponIndex} CurrentClient: {NetworkManager.Singleton.LocalClientId} | OwnerId: {NetworkObject.OwnerClientId})");
+#endif
+
         UnequipAll();
-        _weaponInstances[_weaponIndex % _weaponInstances.Length].gameObject.SetActive(true);
-        WeaponChanged?.Invoke(_weaponInstances[_weaponIndex % _weaponInstances.Length]);
+        _weaponInstances[weaponIndex].gameObject.SetActive(true);
+        WeaponChanged?.Invoke(_weaponInstances[weaponIndex]);
     }
 
     private void UnequipAll()
     {
-        foreach(WeaponInfo weaponInfo in _weaponInstances)
+        foreach (var weaponInfo in _weaponInstances)
         {
             weaponInfo.gameObject.SetActive(false);
         }
