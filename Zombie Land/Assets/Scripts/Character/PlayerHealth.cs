@@ -1,25 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class PlayerHealth : MonoBehaviour, IDamagable
+public class PlayerHealth : NetworkBehaviour, IDamagable
 {
-    [SerializeField]
-    private float _maxHP;
-    [SerializeField]
-    private HealthBarController _healthBarController;
-    [SerializeField]
-    private PlayerMovement _pm;
-    [SerializeField]
-    private PlayerShooting _ps;
+    [SerializeField] private float _maxHP;
 
-    private bool _isDead = false;
-    private float _currentHP;
+    [SerializeField] private HealthBarController _healthBarController;
 
-    private void Start()
-    {
-        _currentHP = _maxHP;
-    }
+    [SerializeField] private PlayerMovement _pm;
+
+    [SerializeField] private PlayerShooting _ps;
+
+    private readonly NetworkVariable<float> _currentHP = new();
+
+    private bool _isDead;
 
     public void Die()
     {
@@ -31,16 +25,36 @@ public class PlayerHealth : MonoBehaviour, IDamagable
         Manager.Default.DefeatMenu();
     }
 
-    public void RecieveDMG(float _dmg)
+    public void RecieveDMG(float dmg)
     {
-        _currentHP -= _dmg;
+        ReceiveDamageServerRpc(dmg);
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        _currentHP.Value = _maxHP;
+    }
+
+    [Rpc(SendTo.Server)]
+    public void ReceiveDamageServerRpc(float damage)
+    {
+        _currentHP.Value -= damage;
+        ReceiveDamageClientRpc(damage);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    public void ReceiveDamageClientRpc(float damage)
+    {
+#if UNITY_EDITOR
+        Debug.Log($"Receive damage (ClientId: '{NetworkManager.LocalClientId}' | OwnerId: {OwnerClientId} Local: {NetworkManager.LocalClientId} Orig: '{_currentHP}' HP: '{_currentHP.Value - damage}')");
+#endif
 
         BloodOverlayManager.Default.AddEffectMod(0.2f);
 
         if (_healthBarController)
-            _healthBarController.ReciveDMG(_dmg, _maxHP);
+            _healthBarController.ReciveDMG(damage, _maxHP);
 
-        if (_currentHP <= 0 && !_isDead)
+        if (_currentHP.Value - damage <= 0 && !_isDead)
         {
             Die();
         }

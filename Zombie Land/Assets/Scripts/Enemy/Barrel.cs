@@ -1,13 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class Barrel : MonoBehaviour, IDamagable
+public class Barrel : NetworkBehaviour, IDamagable
 {
-    [SerializeField]
-    private GameObject _explosionInstance, _explosionVFX;
-    [SerializeField]
-    private AudioClip _explosionClip;
+    [SerializeField] private GameObject _explosionInstance, _explosionVFX;
+
+    [SerializeField] private AudioClip _explosionClip;
 
     public void Die()
     {
@@ -18,7 +16,7 @@ public class Barrel : MonoBehaviour, IDamagable
         Destroy(gameObject);
     }
 
-    public void RecieveDMG(float _dmg)
+    public void RecieveDMG(float dmg)
     {
         Die();
     }

@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class WeaponHolder : NetworkBehaviour
 {
-    [SerializeField] private Transform _SHGrab_target, _SHGrab_hint;
     [SerializeField] private WeaponInfo[] _weaponInstances;
 
     private readonly NetworkVariable<int> _currentWeapon = new();
@@ -47,6 +46,14 @@ public class WeaponHolder : NetworkBehaviour
         RequestWeaponChangeServerRpc(currentWeapon, RpcTarget.Server);
     }
 
+    private void UnequipAll()
+    {
+        foreach (var weaponInfo in _weaponInstances)
+        {
+            weaponInfo.gameObject.SetActive(false);
+        }
+    }
+
     [Rpc(SendTo.Server, RequireOwnership = false, AllowTargetOverride = true)]
     public void RequestWeaponChangeServerRpc(int weaponIndex, RpcParams rpcParams)
     {
@@ -60,15 +67,17 @@ public class WeaponHolder : NetworkBehaviour
 #if UNITY_EDITOR
         Debug.Log($"Swap to server (ClientId: {rpcParams.Receive.SenderClientId} | WeaponId: {weaponIndex})");
 #endif
-        _currentWeapon.Value = weaponIndex;
-        player.UpdateWeaponClientRpc(weaponIndex);
+
+        player._currentWeapon.Value = weaponIndex;
+        player.UpdateWeaponClientRpc();
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    public void UpdateWeaponClientRpc(int weaponIndex)
+    public void UpdateWeaponClientRpc()
     {
+        var weaponIndex = _currentWeapon.Value;
 #if UNITY_EDITOR
-        Debug.Log($"Swap to client (WeapoonId: {weaponIndex} CurrentClient: {NetworkManager.Singleton.LocalClientId} | OwnerId: {NetworkObject.OwnerClientId})");
+        Debug.Log($"Swap to client (WeapoonId: {weaponIndex} | CurrentClient: {NetworkManager.LocalClientId} | OwnerId: {NetworkObject.OwnerClientId})");
 #endif
 
         UnequipAll();
@@ -76,11 +85,9 @@ public class WeaponHolder : NetworkBehaviour
         WeaponChanged?.Invoke(_weaponInstances[weaponIndex]);
     }
 
-    private void UnequipAll()
+    public WeaponInfo GetCurrentWeapon()
     {
-        foreach (var weaponInfo in _weaponInstances)
-        {
-            weaponInfo.gameObject.SetActive(false);
-        }
+        UpdateWeaponClientRpc();
+        return _weaponInstances[_currentWeapon.Value];
     }
 }
