@@ -41,6 +41,8 @@ public class PlayerShooting : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         if (!IsOwner) enabled = false;
+
+        _currentWeaponInfo = _weaponHolder.GetCurrentWeapon();
     }
 
     private void SetUpWeapon(WeaponInfo _weaponInfo)
@@ -56,7 +58,7 @@ public class PlayerShooting : NetworkBehaviour
 
     private void HandleEndShooting()
     {
-        if (_currentWeaponInfo._weaponInfo._muzzleFlash)
+        if (_currentWeaponInfo && _currentWeaponInfo._weaponInfo._muzzleFlash)
             _currentWeaponInfo._weaponInfo._muzzleFlash.Stop();
 
         AudioManager.Default.DestroySingleSources();
@@ -68,15 +70,26 @@ public class PlayerShooting : NetworkBehaviour
             _currentWeaponInfo._weaponInfo._muzzleFlash.Play();
     }
 
+    [Rpc(SendTo.Server, RequireOwnership = false)]
+    public void ShootServerRpc(Vector3 position, Quaternion rotation)
+    {
+        ShootClientRpc(position, rotation);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    public void ShootClientRpc(Vector3 position, Quaternion rotation)
+    {
+        Instantiate(_currentWeaponInfo._weaponInfo._bulletInstance, position, rotation);
+        _recoilCompressor.AddRecoil(_currentWeaponInfo._weaponInfo._weaponParams._recoilStrength);
+    }
+
     private void HandleShooting()
     {
         if (_elapsedTime <= 0)
         {
             _elapsedTime = _currentWeaponInfo._weaponInfo._weaponParams._attackSpeed;
-            Instantiate(_currentWeaponInfo._weaponInfo._bulletInstance,
-                _currentWeaponInfo._weaponInfo._bulletSpawnPoint.position, transform.rotation);
+            ShootServerRpc(_currentWeaponInfo._weaponInfo._bulletSpawnPoint.position, transform.rotation);
 
-            _recoilCompressor.AddRecoil(_currentWeaponInfo._weaponInfo._weaponParams._recoilStrength);
             CameraShaker.Default.Shake(_currentWeaponInfo._weaponInfo._weaponParams._reciolFrequency,
                 _currentWeaponInfo._weaponInfo._weaponParams._recoilDuration);
 

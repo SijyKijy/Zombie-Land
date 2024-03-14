@@ -1,6 +1,6 @@
 public interface IDamagable
 {
-    void RecieveDMG(float _dmg);
+    void RecieveDMG(float dmg);
 
     void Die();
 }
