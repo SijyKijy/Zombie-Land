@@ -36,12 +36,14 @@ public class LevelManager : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (!IsServer)
+        if (!IsServer || !IsOwner)
         {
             enabled = false;
+            //gameObject.SetActive(false); // TODO: Возможно потребуется выключить
             return;
         }
 
+        _playerTransform = NetworkManager.Singleton.LocalClient.PlayerObject.transform;
         Init();
     }
 

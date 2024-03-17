@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -109,5 +110,38 @@ public class MenuManager : MonoBehaviour
     private void LoadGameScene()
     {
         SceneManager.LoadScene(1);
+    }
+    
+    public void HostGame()
+    {
+        SceneManager.sceneLoaded += (scene, mode) =>
+        {
+            // Проверяем, что загружена нужная сцена
+            if (scene.buildIndex == 1)
+            {
+                // Запускаем хост
+                NetworkManager.Singleton.StartHost();
+            }
+
+            // Отписываемся от события
+            //SceneManager.sceneLoaded -= OnSceneLoaded;
+        };
+        
+        _curtain.OnOpen += () =>
+        {
+            var asyncOperation = SceneManager.LoadSceneAsync(1);
+            asyncOperation.completed += _ => NetworkManager.Singleton.StartHost();
+        };
+        _curtain.OpenCurtain();
+    }
+    
+    public void JoinGame()
+    {
+        _curtain.OnOpen += () =>
+        {
+            var asyncOperation = SceneManager.LoadSceneAsync(1);
+            asyncOperation.completed += _ => NetworkManager.Singleton.StartClient();
+        };
+        _curtain.OpenCurtain();
     }
 }

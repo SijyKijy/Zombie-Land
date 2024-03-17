@@ -791,8 +791,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30a5bab245771e848b95539a0773ef0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _SHGrab_target: {fileID: 3249420736122066484}
-  _SHGrab_hint: {fileID: 1965134447876552231}
   _weaponInstances:
   - {fileID: 4445559225671972335}
   - {fileID: 4888825047984107712}
@@ -16758,6 +16756,10 @@ PrefabInstance:
     - target: {fileID: 6472760557907898540, guid: 4050cf5c5258afa40811983151dd7a98, type: 3}
       propertyPath: m_Name
       value: Canvas_Overlay
+      objectReference: {fileID: 0}
+    - target: {fileID: 6472760557907898540, guid: 4050cf5c5258afa40811983151dd7a98, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6671976708188682096, guid: 4050cf5c5258afa40811983151dd7a98, type: 3}
       propertyPath: m_Color.b
