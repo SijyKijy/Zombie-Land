@@ -11,6 +11,9 @@ public class WeaponHolder : NetworkBehaviour
 
     private void Update()
     {
+        if (!IsOwner)
+            return;
+        
         if (Input.GetButtonDown("WeaponSwitchNext"))
             NextWeapon();
         if (Input.GetButtonDown("WeaponSwitchPrevious"))
@@ -19,6 +22,12 @@ public class WeaponHolder : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        if (!IsOwner)
+        {
+            UpdateWeaponClientRpc(_currentWeapon.Value);
+            return;
+        }
+        
         RequestWeaponChangeServerRpc(0, RpcTarget.Server);
     }
 
@@ -69,13 +78,12 @@ public class WeaponHolder : NetworkBehaviour
 #endif
 
         player._currentWeapon.Value = weaponIndex;
-        player.UpdateWeaponClientRpc();
+        player.UpdateWeaponClientRpc(weaponIndex);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    public void UpdateWeaponClientRpc()
+    public void UpdateWeaponClientRpc(int weaponIndex)
     {
-        var weaponIndex = _currentWeapon.Value;
 #if UNITY_EDITOR
         Debug.Log($"Swap to client (WeapoonId: {weaponIndex} | CurrentClient: {NetworkManager.LocalClientId} | OwnerId: {NetworkObject.OwnerClientId})");
 #endif
@@ -87,7 +95,7 @@ public class WeaponHolder : NetworkBehaviour
 
     public WeaponInfo GetCurrentWeapon()
     {
-        UpdateWeaponClientRpc();
+        UpdateWeaponClientRpc(_currentWeapon.Value);
         return _weaponInstances[_currentWeapon.Value];
     }
 }

@@ -77,7 +77,7 @@ public class PlayerShooting : NetworkBehaviour
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    public void ShootClientRpc(Vector3 position, Quaternion rotation)
+    public void ShootClientRpc(Vector3 position, Quaternion rotation) // TODO: По хорошгму передать id оружимя и уже от него спавшить нужные пули
     {
         Instantiate(_currentWeaponInfo._weaponInfo._bulletInstance, position, rotation);
         _recoilCompressor.AddRecoil(_currentWeaponInfo._weaponInfo._weaponParams._recoilStrength);
