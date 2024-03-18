@@ -92,19 +92,6 @@ public class MenuManager : MonoBehaviour
     {
         SetConnectionData();
 
-        SceneManager.sceneLoaded += (scene, mode) =>
-        {
-            // Проверяем, что загружена нужная сцена
-            if (scene.buildIndex == 1)
-            {
-                // Запускаем хост
-                NetworkManager.Singleton.StartHost();
-            }
-
-            // Отписываемся от события
-            //SceneManager.sceneLoaded -= OnSceneLoaded;
-        };
-
         _curtain.OnOpen += () =>
         {
             var asyncOperation = SceneManager.LoadSceneAsync(1);
