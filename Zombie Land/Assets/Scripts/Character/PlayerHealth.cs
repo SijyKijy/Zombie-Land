@@ -32,7 +32,12 @@ public class PlayerHealth : NetworkBehaviour, IDamagable
 
     public override void OnNetworkSpawn()
     {
-        _currentHP.Value = _maxHP;
+        if (IsServer)
+        {
+            _currentHP.Value = _maxHP;
+        }
+        
+        base.OnNetworkSpawn();
     }
 
     [Rpc(SendTo.Server)]
