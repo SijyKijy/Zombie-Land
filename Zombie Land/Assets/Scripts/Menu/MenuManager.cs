@@ -116,12 +116,20 @@ public class MenuManager : MonoBehaviour
     {
         SetConnectionData();
 
-        _curtain.OnOpen += () =>
+        NetworkManager.Singleton.StartClient();
+        NetworkManager.Singleton.OnConnectionEvent += OnSingletonOnOnConnectionEvent;
+        void OnSingletonOnOnConnectionEvent(NetworkManager manager, ConnectionEventData data)
         {
-            var asyncOperation = SceneManager.LoadSceneAsync(1);
-            asyncOperation.completed += _ => NetworkManager.Singleton.StartClient();
-        };
-        _curtain.OpenCurtain();
+            NetworkManager.Singleton.OnConnectionEvent -= OnSingletonOnOnConnectionEvent;
+            
+            if (data.ClientId != manager.LocalClientId)
+                return;
+
+            if (data.EventType != ConnectionEvent.ClientDisconnected)
+                return;
+            
+            SceneManager.LoadScene(0);
+        }
     }
 
     #region Singleton
