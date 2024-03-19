@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,19 +18,14 @@ public class HealthBarController : MonoBehaviour
 
     public void ReciveDMG(float _dmg, float _maxHP)
     {
-        float delta = _dmg / _maxHP;
+        var delta = _dmg / _maxHP;
         _actualHealthBar.fillAmount -= delta;
-        try
-        {
-            StartCoroutine(HealthReduceDelay(delta));
-        }
-        catch
-        {
-            
-        }
 
-        if(_popUpDMGInstance)
-        Instantiate(_popUpDMGInstance, transform).GetComponent<UIPopUpDMG>().SetUp(_dmg, false);
+        if (gameObject.activeInHierarchy)
+            StartCoroutine(HealthReduceDelay(delta));
+
+        if (_popUpDMGInstance)
+            Instantiate(_popUpDMGInstance, transform).GetComponent<UIPopUpDMG>().SetUp(_dmg, false);
     }
 
     private IEnumerator HealthReduceDelay(float _delta)

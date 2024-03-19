@@ -1,24 +1,25 @@
 using System.Collections;
-using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class MoneyInstance : MonoBehaviour
 {
-    [SerializeField]
-    private Vector3 _rotateSpeed;
-    [SerializeField]
-    private float
+    private const string PLAYER_TAG = "Player";
+
+    [SerializeField] private Vector3 _rotateSpeed;
+
+    [SerializeField] private float
         _actionDuration,
         _initialMaxForce;
-    [SerializeField]
-    private int _moneyAmount;
-    [SerializeField]
-    private Rigidbody _rb;
-    [SerializeField]
-    private AudioClip _audioClip;
+
+    [SerializeField] private int _moneyAmount;
+
+    [SerializeField] private Rigidbody _rb;
+
+    [SerializeField] private AudioClip _audioClip;
 
     private Transform _plTransformPos;
-    private const string PLAYER_TAG = "Player";
 
     private void Start()
     {
@@ -32,11 +33,11 @@ public class MoneyInstance : MonoBehaviour
         transform.Rotate(_rotateSpeed * Time.deltaTime);
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other) // TODO: Какого-то чёрта сейчас деньги улетают ко второму игроку
     {
-        if(other.tag == PLAYER_TAG)
+        if (other.CompareTag(PLAYER_TAG) && (other.GetComponent<NetworkBehaviour>()?.IsLocalPlayer ?? false))
         {
-            StartCoroutine(CFlyTowardsPlayer());            
+            StartCoroutine(CFlyTowardsPlayer());
         }
     }
 
@@ -49,7 +50,7 @@ public class MoneyInstance : MonoBehaviour
             transform.position = Vector3.Lerp(transform.position, _plTransformPos.position, timeElapsed / _actionDuration);
             timeElapsed += Time.deltaTime;
 
-            if(Vector3.Distance(transform.position, _plTransformPos.position) < 1f)
+            if (Vector3.Distance(transform.position, _plTransformPos.position) < 1f)
             {
                 MoneyMenuController.Default.UpdateMoney(_moneyAmount);
                 AudioManager.Default.PlaySoundFXAtPoint(_audioClip, transform);
@@ -58,7 +59,5 @@ public class MoneyInstance : MonoBehaviour
 
             yield return null;
         }
-
-        
     }
 }

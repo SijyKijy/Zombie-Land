@@ -65,6 +65,9 @@ public class LevelManager : NetworkBehaviour
 
     private void SpawnZombie()
     {
+        if (!IsServer)
+            return;
+
         var enemy = Instantiate(_currentLevelSettings.ZombiePool[Random.Range(0, _currentLevelSettings.ZombiePool.Count)], _spawnPoints[Random.Range(0, _spawnPoints.Length)].position, Quaternion.identity);
         enemy.GetComponent<NetworkObject>().Spawn(true);
         _currentZombieInstances++;
@@ -114,6 +117,7 @@ public class LevelManager : NetworkBehaviour
 
     private void UpdateProgressBar()
     {
+        return; // TODO: Доделать
         _progressBarFill.fillAmount = (float)_currentFrags / _targetFrags;
         _progressBarTextfield.text = _currentFrags + " / " + _targetFrags;
     }

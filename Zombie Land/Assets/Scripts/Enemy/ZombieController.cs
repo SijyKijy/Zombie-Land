@@ -66,15 +66,22 @@ public class ZombieController : NetworkBehaviour, IDamagable
         }
 
         StartCoroutine(CDissolve());
-        LevelManager.Default.ZombieKilled();
 
-        Destroy(gameObject, 4f);
+        if (IsServer)
+        {
+            LevelManager.Default.ZombieKilled();
+            Destroy(gameObject, 4f);
+        }
+
         enabled = false;
     }
 
     public override void OnNetworkSpawn()
     {
-        _currentHP.Value = _maxHP;
+        if (IsServer)
+        {
+            _currentHP.Value = _maxHP;
+        }
 
         SetDestinationTarget();
     }

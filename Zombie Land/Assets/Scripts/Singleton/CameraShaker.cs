@@ -1,23 +1,24 @@
-using Cinemachine;
 using System.Collections;
+using Cinemachine;
 using UnityEngine;
 
 public class CameraShaker : MonoBehaviour
 {
-    #region Singleton
-    private static CameraShaker _default;
-    public static CameraShaker Default => _default;
-    #endregion
-
-    private void Awake()
-    {
-        _default = this;
-    }
-
     [SerializeField] private CinemachineVirtualCamera _camera;
 
     private CinemachineBasicMultiChannelPerlin _noise;
     private IEnumerator _processShakeHolder;
+
+    #region Singleton
+
+    public static CameraShaker Default { get; private set; }
+
+    #endregion
+
+    private void Awake()
+    {
+        Default = this;
+    }
 
     private void Start()
     {
@@ -26,6 +27,9 @@ public class CameraShaker : MonoBehaviour
 
     public void Shake(float frequency, float duration)
     {
+        if (!gameObject.activeInHierarchy)
+            return;
+
         if (_processShakeHolder != null)
             StopCoroutine(_processShakeHolder);
         _processShakeHolder = ProcessShake(frequency, duration);
