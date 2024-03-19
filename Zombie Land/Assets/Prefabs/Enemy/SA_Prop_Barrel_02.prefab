@@ -12,8 +12,9 @@ GameObject:
   - component: {fileID: 8414189590057419283}
   - component: {fileID: 4018034741747224626}
   - component: {fileID: 5255606683383400099}
-  - component: {fileID: 4675914155633356704}
   - component: {fileID: -5607339677130190373}
+  - component: {fileID: 4675914155633356704}
+  - component: {fileID: 9081321770515051880}
   m_Layer: 8
   m_Name: SA_Prop_Barrel_02
   m_TagString: Enemy
@@ -108,6 +109,27 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: c42f61f3af44b0d45875f8fe24b2b194, type: 3}
+--- !u!114 &-5607339677130190373
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8715808299067709457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 4234387540
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!114 &4675914155633356704
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,7 +145,7 @@ MonoBehaviour:
   _explosionInstance: {fileID: 2772378543286543728, guid: 26436ec7d861b4c4c8f155257d7c2ffb, type: 3}
   _explosionVFX: {fileID: 1757550589666010878, guid: 04eb585e290dc479285bcbc044e5575f, type: 3}
   _explosionClip: {fileID: 8300000, guid: 6a24251e2c8e96c4697d8d0c68fcb424, type: 3}
---- !u!114 &-5607339677130190373
+--- !u!114 &9081321770515051880
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -132,15 +154,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 8715808299067709457}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 0
-  InScenePlacedSourceGlobalObjectIdHash: 0
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
+  UseUnreliableDeltas: 0
+  SyncPositionX: 1
+  SyncPositionY: 0
+  SyncPositionZ: 1
+  SyncRotAngleX: 0
+  SyncRotAngleY: 0
+  SyncRotAngleZ: 0
+  SyncScaleX: 0
+  SyncScaleY: 0
+  SyncScaleZ: 0
+  PositionThreshold: 0.001
+  RotAngleThreshold: 0.01
+  ScaleThreshold: 0.01
+  UseQuaternionSynchronization: 0
+  UseQuaternionCompression: 0
+  UseHalfFloatPrecision: 0
+  InLocalSpace: 0
+  Interpolate: 1
+  SlerpPosition: 0
