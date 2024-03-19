@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,17 +5,15 @@ public class ContentElement : MonoBehaviour
 {
     public int _cost;
 
-    [SerializeField]
-    private string PREFS_NAME = "Weapon";
-    [SerializeField]
-    private int PREFS_INDEX = 0;
+    [SerializeField] private string PREFS_NAME = "Weapon";
 
-    [SerializeField]
-    private GameObject[] _statePool;
-    [SerializeField]
-    private Button _BTN_Buy;
-    [SerializeField]
-    private SkinChangerPlaymode _skinChanger;
+    [SerializeField] private int PREFS_INDEX;
+
+    [SerializeField] private GameObject[] _statePool;
+
+    [SerializeField] private Button _BTN_Buy;
+
+    [SerializeField] private SkinChangerPlaymode _skinChanger;
 
     private void OnEnable()
     {
@@ -33,7 +29,7 @@ public class ContentElement : MonoBehaviour
 
         _statePool[PlayerPrefs.GetInt(PREFS_NAME + PREFS_INDEX, 0)].SetActive(true);
 
-        if(MoneyMenuController.Default.GetCurrentMoney() >= _cost)
+        if (MoneyMenuController.Default.GetCurrentMoney() >= _cost)
         {
             _BTN_Buy.interactable = true;
         }
@@ -45,7 +41,7 @@ public class ContentElement : MonoBehaviour
 
     public void ApplySkin(bool isActive)
     {
-        if(PlayerPrefs.GetInt(PREFS_NAME + PREFS_INDEX, 0) <= 0)
+        if (PlayerPrefs.GetInt(PREFS_NAME + PREFS_INDEX, 0) <= 0)
         {
             return;
         }
@@ -53,7 +49,8 @@ public class ContentElement : MonoBehaviour
         if (isActive)
         {
             PlayerPrefs.SetInt(PREFS_NAME + PREFS_INDEX, 2);
-            AudioManager.Default.PlaySoundFXPreset(AudioManager.Presets.Click);            
+            AudioManager.Default.PlaySoundFXPreset(AudioManager.Presets.Click);
+            _skinChanger.UpdateSkin(PREFS_INDEX);
         }
         else
         {
@@ -61,7 +58,6 @@ public class ContentElement : MonoBehaviour
         }
 
         UpdateCurrentState();
-        _skinChanger.UpdateSkin();
     }
 
     public void BuyElement()
