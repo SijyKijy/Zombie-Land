@@ -13,7 +13,7 @@ public class WeaponHolder : NetworkBehaviour
     {
         if (!IsOwner)
             return;
-        
+
         if (Input.GetButtonDown("WeaponSwitchNext"))
             NextWeapon();
         if (Input.GetButtonDown("WeaponSwitchPrevious"))
@@ -27,7 +27,7 @@ public class WeaponHolder : NetworkBehaviour
             UpdateWeaponClientRpc(_currentWeapon.Value);
             return;
         }
-        
+
         RequestWeaponChangeServerRpc(0, RpcTarget.Server);
     }
 
@@ -95,7 +95,6 @@ public class WeaponHolder : NetworkBehaviour
 
     public WeaponInfo GetCurrentWeapon()
     {
-        UpdateWeaponClientRpc(_currentWeapon.Value);
         return _weaponInstances[_currentWeapon.Value];
     }
 }

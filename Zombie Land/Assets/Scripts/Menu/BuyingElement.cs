@@ -1,42 +1,38 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class BuyingElement : MonoBehaviour
 {
-    public Action StateUpdated;
-
-    [SerializeField]
-    private Button[] _upgradeBtnPool;
-    [SerializeField]
-    private Image[] _filler;
-    [SerializeField]
-    private GameObject[] _unBought, _bought;
-    [SerializeField]
-    private TMP_Text[] _costsName;
-    [SerializeField]
-    private int[] _maxUpgradeLevel = { 3, 3, 1, 1, 1 };
-    [SerializeField]
-    private int _weaponIndex;
-    [SerializeField]
-    private CostsMatrix[] _costsMatrix;
-    [Serializable]
-    private struct CostsMatrix
-    {
-        public int[] _costsAmount;
-    }
-
     private const string PREFS_WEAPON_NAME = "Weapon", PREFS_UPGRADE_NAME = "Upgrade";
+
+    [SerializeField] private Button[] _upgradeBtnPool;
+
+    [SerializeField] private Image[] _filler;
+
+    [SerializeField] private GameObject[] _unBought, _bought;
+
+    [SerializeField] private TMP_Text[] _costsName;
+
+    [SerializeField] private int[] _maxUpgradeLevel = { 3, 3, 1, 1, 1 };
+
+    [SerializeField] private int _weaponIndex;
+
+    [SerializeField] private CostsMatrix[] _costsMatrix;
 
     private int _currentMoney;
     private WeaponComponentsController _weaponComponentsController;
+    public Action StateUpdated;
 
     private void Awake()
     {
         _weaponComponentsController = FindAnyObjectByType<WeaponComponentsController>(FindObjectsInactive.Include);
+    }
+
+    private void Start()
+    {
+        UpgradeState();
     }
 
     private void OnEnable()
@@ -50,18 +46,13 @@ public class BuyingElement : MonoBehaviour
         _weaponComponentsController.StateUpdated -= UpgradeState;
     }
 
-    private void Start()
-    {
-        UpgradeState();
-    }
-
     private void UpgradeState()
     {
         _currentMoney = MoneyMenuController.Default.GetCurrentMoney();
-        for (int i = 0; i < _upgradeBtnPool.Length; i++)
+        for (var i = 0; i < _upgradeBtnPool.Length; i++)
         {
-            int state = PlayerPrefs.GetInt(PREFS_WEAPON_NAME + _weaponIndex + PREFS_UPGRADE_NAME + i);
-            if(state == 0)
+            var state = PlayerPrefs.GetInt(PREFS_WEAPON_NAME + _weaponIndex + PREFS_UPGRADE_NAME + i);
+            if (state == 0)
             {
                 _filler[i].fillAmount = 0;
                 _unBought[i].gameObject.SetActive(true);
@@ -69,7 +60,7 @@ public class BuyingElement : MonoBehaviour
 
                 _costsName[i].text = _costsMatrix[i]._costsAmount[state].ToString();
 
-                if(_currentMoney >= _costsMatrix[i]._costsAmount[state])
+                if (_currentMoney >= _costsMatrix[i]._costsAmount[state])
                 {
                     _upgradeBtnPool[i].interactable = true;
                 }
@@ -88,7 +79,7 @@ public class BuyingElement : MonoBehaviour
             }
             else
             {
-                _filler[i].fillAmount = (float) state / _maxUpgradeLevel[i];
+                _filler[i].fillAmount = (float)state / _maxUpgradeLevel[i];
                 _unBought[i].gameObject.SetActive(true);
                 _bought[i].gameObject.SetActive(false);
 
@@ -108,7 +99,7 @@ public class BuyingElement : MonoBehaviour
 
     public void ProceedBuy(int index)
     {
-        int state = PlayerPrefs.GetInt(PREFS_WEAPON_NAME + _weaponIndex + PREFS_UPGRADE_NAME + index);
+        var state = PlayerPrefs.GetInt(PREFS_WEAPON_NAME + _weaponIndex + PREFS_UPGRADE_NAME + index);
         MoneyMenuController.Default.UpdateMoney(-_costsMatrix[index]._costsAmount[state]);
 
         PlayerPrefs.SetInt(PREFS_WEAPON_NAME + _weaponIndex + PREFS_UPGRADE_NAME + index, ++state);
@@ -116,5 +107,11 @@ public class BuyingElement : MonoBehaviour
         UpgradeState();
 
         StateUpdated?.Invoke();
+    }
+
+    [Serializable]
+    private struct CostsMatrix
+    {
+        public int[] _costsAmount;
     }
 }

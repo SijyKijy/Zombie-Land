@@ -74,7 +74,7 @@ public class PlayerShooting : NetworkBehaviour
     }
 
     [Rpc(SendTo.Server, RequireOwnership = false)]
-    public void ShootServerRpc(Vector3 position, Quaternion rotation)
+    public void ShootServerRpc(Vector3 position, Quaternion rotation) // TODO: Скорее всего не нужен
     {
         ShootClientRpc(position, rotation);
     }
@@ -82,7 +82,7 @@ public class PlayerShooting : NetworkBehaviour
     [Rpc(SendTo.ClientsAndHost)]
     public void ShootClientRpc(Vector3 position, Quaternion rotation) // TODO: По хорошгму передать id оружимя и уже от него спавшить нужные пули
     {
-        var weap = _weaponHolder.GetCurrentWeapon(); // TODO: Затратно получать оружие. НО ШО ПОДЕЛАТЬ
+        var weap = _weaponHolder.GetCurrentWeapon();
         Instantiate(weap._weaponInfo._bulletInstance, position, rotation);
         _recoilCompressor.AddRecoil(weap._weaponInfo._weaponParams._recoilStrength);
     }
@@ -92,8 +92,9 @@ public class PlayerShooting : NetworkBehaviour
         if (_elapsedTime <= 0)
         {
             _elapsedTime = _currentWeaponInfo._weaponInfo._weaponParams._attackSpeed;
-            ShootServerRpc(_currentWeaponInfo._weaponInfo._bulletSpawnPoint.position, transform.rotation);
-
+            
+            ShootClientRpc(_currentWeaponInfo._weaponInfo._bulletSpawnPoint.position, transform.rotation);
+            
             CameraShaker.Default.Shake(_currentWeaponInfo._weaponInfo._weaponParams._reciolFrequency,
                 _currentWeaponInfo._weaponInfo._weaponParams._recoilDuration);
 

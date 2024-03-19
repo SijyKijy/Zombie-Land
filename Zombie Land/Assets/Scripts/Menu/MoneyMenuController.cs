@@ -13,7 +13,7 @@ public class MoneyMenuController : MonoBehaviour
 
     private void Start()
     {
-        _currentMoney = PlayerPrefs.GetInt("Money", 0);
+        _currentMoney = Manager.IsDebug ? 100000 : PlayerPrefs.GetInt("Money", 0);
         _tempMoney = _currentMoney;
         _moneyTextField.text = _tempMoney.ToString();
     }

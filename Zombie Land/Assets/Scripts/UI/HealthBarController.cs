@@ -16,6 +16,17 @@ public class HealthBarController : MonoBehaviour
         _deltaHealthBar.fillAmount = Mathf.Lerp(_deltaHealthBar.fillAmount, _targetHealthDelay, Time.deltaTime * _decreaceMod);
     }
 
+    public void SetHp(float hp)
+    {
+        _actualHealthBar.fillAmount = hp;
+        
+        if (gameObject.activeInHierarchy)
+            StartCoroutine(HealthReduceDelay(hp));
+
+        if (_popUpDMGInstance)
+            Instantiate(_popUpDMGInstance, transform).GetComponent<UIPopUpDMG>().SetUp(hp, false);
+    }
+
     public void ReciveDMG(float _dmg, float _maxHP)
     {
         var delta = _dmg / _maxHP;
