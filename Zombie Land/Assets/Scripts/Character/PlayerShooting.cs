@@ -15,6 +15,9 @@ public class PlayerShooting : NetworkBehaviour
 
     private void Update()
     {
+        if (!IsOwner)
+            return;
+
         _elapsedTime -= Time.deltaTime;
 
         if (Input.GetMouseButton(0) && _currentWeaponInfo.IsAbleToShoot())
@@ -79,8 +82,9 @@ public class PlayerShooting : NetworkBehaviour
     [Rpc(SendTo.ClientsAndHost)]
     public void ShootClientRpc(Vector3 position, Quaternion rotation) // TODO: По хорошгму передать id оружимя и уже от него спавшить нужные пули
     {
-        Instantiate(_currentWeaponInfo._weaponInfo._bulletInstance, position, rotation);
-        _recoilCompressor.AddRecoil(_currentWeaponInfo._weaponInfo._weaponParams._recoilStrength);
+        var weap = _weaponHolder.GetCurrentWeapon(); // TODO: Затратно получать оружие. НО ШО ПОДЕЛАТЬ
+        Instantiate(weap._weaponInfo._bulletInstance, position, rotation);
+        _recoilCompressor.AddRecoil(weap._weaponInfo._weaponParams._recoilStrength);
     }
 
     private void HandleShooting()

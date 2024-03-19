@@ -51,7 +51,7 @@ public class PlayerHealth : NetworkBehaviour, IDamagable
 
         BloodOverlayManager.Default.AddEffectMod(0.2f);
 
-        if (_healthBarController)
+        if (_healthBarController && IsLocalPlayer)
             _healthBarController.ReciveDMG(damage, _maxHP);
 
         if (_currentHP.Value - damage <= 0 && !_isDead)

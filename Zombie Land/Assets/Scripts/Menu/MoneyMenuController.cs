@@ -1,24 +1,12 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 public class MoneyMenuController : MonoBehaviour
 {
-    #region Singleton
-    private static MoneyMenuController _default;
-    public static MoneyMenuController Default => _default;
+    [SerializeField] private TMP_Text _moneyTextField;
 
-    private void Awake()
-    {
-        _default = this;
-    }
-    #endregion
-
-    [SerializeField]
-    private TMP_Text _moneyTextField;
-    [SerializeField]
-    private float _changeSpeed = 1f;
+    [SerializeField] private float _changeSpeed = 1f;
 
     private int _currentMoney, _tempMoney;
     private Coroutine _moneyUpdater;
@@ -32,7 +20,7 @@ public class MoneyMenuController : MonoBehaviour
 
     private IEnumerator CUpdateMoneyAmount()
     {
-        float lerp = 0f;
+        var lerp = 0f;
 
         while (_tempMoney != _currentMoney)
         {
@@ -48,10 +36,13 @@ public class MoneyMenuController : MonoBehaviour
 
     public void UpdateMoney(int difference)
     {
+        if (!gameObject.activeInHierarchy)
+            return;
+
         _currentMoney += difference;
         PlayerPrefs.SetInt("Money", _currentMoney);
 
-        if(_moneyUpdater != null)
+        if (_moneyUpdater != null)
         {
             StopCoroutine(_moneyUpdater);
         }
@@ -63,4 +54,15 @@ public class MoneyMenuController : MonoBehaviour
     {
         return _currentMoney;
     }
+
+    #region Singleton
+
+    public static MoneyMenuController Default { get; private set; }
+
+    private void Awake()
+    {
+        Default = this;
+    }
+
+    #endregion
 }
