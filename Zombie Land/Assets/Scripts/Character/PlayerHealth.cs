@@ -17,7 +17,11 @@ public class PlayerHealth : NetworkBehaviour, IDamagable
 
     public void Die()
     {
-        _isDead = true;
+        if (Manager.IsDebug)
+        {
+            DieServerRpc();
+            return;
+        }
 
         _pm.enabled = false;
         _ps.enabled = false;
@@ -26,8 +30,30 @@ public class PlayerHealth : NetworkBehaviour, IDamagable
             Manager.Default.DefeatMenu();
     }
 
+    [Rpc(SendTo.Server)]
+    public void DieServerRpc()
+    {
+        var m = LevelManager.Default;
+        var spawns = m.PlSpawnPoints;
+
+        _currentHP.Value = _maxHP;
+        DieClientRpc(_maxHP, spawns[Random.Range(0, spawns.Length)].position);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    public void DieClientRpc(float currentHp, Vector3 spawnPos)
+    {
+        if (_healthBarController)
+            _healthBarController.SetHp(currentHp);
+
+        gameObject.transform.position = spawnPos;
+        _isDead = false;
+    }
+
     public void RecieveDMG(float dmg)
     {
+        if(!IsOwner)
+            return;
         ReceiveDamageServerRpc(dmg);
     }
 

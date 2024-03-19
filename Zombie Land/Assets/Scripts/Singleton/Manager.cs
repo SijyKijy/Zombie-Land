@@ -3,30 +3,32 @@ using UnityEngine.SceneManagement;
 
 public class Manager : MonoBehaviour
 {
-    #region Singleton
-    private static Manager _default;
-    public static Manager Default => _default;
-    #endregion
+    [SerializeField] private Camera _cameraMain;
 
-    [SerializeField] 
-    private Camera _cameraMain;
-    [SerializeField] 
-    private Transform _plCharaTransform;
-    [SerializeField]
-    private Curtain 
+    [SerializeField] private Transform _plCharaTransform;
+
+    [SerializeField] private Curtain
         _curtain,
         _defeatCurtain;
-    [SerializeField]
-    private GameObject
+
+    [SerializeField] private GameObject
         _pauseInterface,
         _defeatInterface,
         _winInterface;
 
-    private bool _isPauseActive = false;
+    public static bool IsDebug = true;
+
+    private bool _isPauseActive;
+
+    #region Singleton
+
+    public static Manager Default { get; private set; }
+
+    #endregion
 
     private void Awake()
     {
-        _default = this;
+        Default = this;
 
         if (_cameraMain == null)
             _cameraMain = Camera.main;
@@ -41,6 +43,14 @@ public class Manager : MonoBehaviour
         AudioManager.Default.PlayBGPreset(AudioManager.Presets.Game);
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            PauseMenu();
+        }
+    }
+
     public Camera GetMainCamera()
     {
         return _cameraMain;
@@ -49,14 +59,6 @@ public class Manager : MonoBehaviour
     public Transform GetPlayerCharacterTransform()
     {
         return _plCharaTransform;
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            PauseMenu();
-        }
     }
 
     public void PauseMenu()
@@ -86,22 +88,34 @@ public class Manager : MonoBehaviour
 
     private void PauseTime()
     {
+        if (IsDebug)
+            return;
+
         Time.timeScale = 0;
     }
 
     private void ResumeTime()
     {
+        if (IsDebug)
+            return;
+
         Time.timeScale = 1;
     }
 
     public void GotoMenu()
     {
+        if (IsDebug)
+            return;
+
         ResumeTime();
         SceneManager.LoadScene(0);
     }
 
     public void NextLevel()
     {
+        if (IsDebug)
+            return;
+
         ResumeTime();
         SceneManager.LoadScene(1);
     }

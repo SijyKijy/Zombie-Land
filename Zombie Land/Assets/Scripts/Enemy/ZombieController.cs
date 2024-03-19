@@ -89,17 +89,18 @@ public class ZombieController : NetworkBehaviour, IDamagable
     [Rpc(SendTo.Server)]
     public void ReceiveDamageServerRpc(float damage)
     {
-        _currentHP.Value -= damage;
-        ReceiveDamageClientRpc(damage);
+        var newHp = _currentHP.Value - damage;
+        _currentHP.Value = newHp;
+        ReceiveDamageClientRpc(damage, newHp);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    public void ReceiveDamageClientRpc(float damage)
+    public void ReceiveDamageClientRpc(float damage, float newHp)
     {
         if (_healthBarController)
             _healthBarController.ReciveDMG(damage, _maxHP);
 
-        if (_currentHP.Value - damage <= 0)
+        if (newHp <= 0)
         {
             Die();
         }
@@ -159,6 +160,9 @@ public class ZombieController : NetworkBehaviour, IDamagable
             yield return null;
         }
 
-        Destroy(gameObject);
+        if (IsServer)
+        {
+            Destroy(gameObject);
+        }
     }
 }

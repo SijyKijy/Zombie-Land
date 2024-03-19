@@ -20,6 +20,8 @@ public class LevelManager : NetworkBehaviour
 
     [SerializeField] private Transform[] _spawnPoints, _plSpawnPoints;
 
+    public Transform[] PlSpawnPoints => _plSpawnPoints;
+
     private LevelSettings _currentLevelSettings;
 
     private int
