@@ -22,7 +22,8 @@ public class PlayerHealth : NetworkBehaviour, IDamagable
         _pm.enabled = false;
         _ps.enabled = false;
 
-        Manager.Default.DefeatMenu();
+        if (IsLocalPlayer)
+            Manager.Default.DefeatMenu();
     }
 
     public void RecieveDMG(float dmg)
@@ -36,7 +37,7 @@ public class PlayerHealth : NetworkBehaviour, IDamagable
         {
             _currentHP.Value = _maxHP;
         }
-        
+
         base.OnNetworkSpawn();
     }
 
@@ -54,7 +55,8 @@ public class PlayerHealth : NetworkBehaviour, IDamagable
         Debug.Log($"Receive damage (ClientId: '{NetworkManager.LocalClientId}' | OwnerId: {OwnerClientId} Local: {NetworkManager.LocalClientId} Orig: '{_currentHP}' HP: '{_currentHP.Value - damage}')");
 #endif
 
-        BloodOverlayManager.Default.AddEffectMod(0.2f);
+        if (IsLocalPlayer)
+            BloodOverlayManager.Default.AddEffectMod(0.2f);
 
         if (_healthBarController && IsLocalPlayer)
             _healthBarController.ReciveDMG(damage, _maxHP);
