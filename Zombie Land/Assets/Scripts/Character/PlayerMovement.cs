@@ -34,7 +34,29 @@ public class PlayerMovement : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (!IsOwner) enabled = false;
+        if (IsOwner)
+            return;
+
+        enabled = false;
+        PlayerConnectedServerRpc();
+    }
+
+    [Rpc(SendTo.Server)]
+    private void PlayerConnectedServerRpc()
+    {
+        var m = LevelManager.Default;
+        var spawns = m.PlSpawnPoints;
+
+        PlayerConnectedClientRpc(spawns[Random.Range(0, spawns.Length)].position);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void PlayerConnectedClientRpc(Vector3 spawnPos)
+    {
+        if (IsOwner)
+            return;
+
+        gameObject.transform.position = spawnPos;
     }
 
     private void AimTowardsMouse()
